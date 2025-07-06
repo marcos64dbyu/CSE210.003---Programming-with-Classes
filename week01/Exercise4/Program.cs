@@ -23,6 +23,8 @@ class Program
         Console.WriteLine($"The sum is: {total}");
         Console.WriteLine($"The average is: {total / (numbers.Count - 1)}"); 
         Console.WriteLine($"The largest number is: {numbers.Max()}"); 
+        Console.WriteLine($"The smallest positive number is: {}"); 
+
 
     }
 }
