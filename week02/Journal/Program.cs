@@ -2,8 +2,199 @@ using System;
 
 class Program
 {
+    private static Journal.PromptGenerator promptGenerator = new Journal.PromptGenerator();
+    private static Journal.Entry entry = new Journal.Entry();
+    private static string choseElection = "";
+    private static List<Journal.Entry> entries = new List<Journal.Entry>();
+
     static void Main(string[] args)
     {
-        Console.WriteLine("Hello World! This is the Journal Project.");
+        do
+        {
+            choseElection = menu();     // Call the menu method
+        } while (choseElection != "5"); 
+    }
+
+    static string menu()
+    {
+        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.WriteLine($"\n---------Welcome to the Journal App!------------");
+        Console.ResetColor();
+        Console.WriteLine("1. Create a new entry");
+        Console.WriteLine("2. View entries");
+        Console.WriteLine("3. Save entries to file");
+        Console.WriteLine("4. Load entries from file");
+        Console.WriteLine("5. Exit");
+        Console.Write("\nPlease select an option: ");
+        string choice = Console.ReadLine();
+
+        if (choice == "1")
+        {
+            string prompt = promptGenerator.GetRandomPrompt();
+            Console.WriteLine($"\n{prompt}");
+            string answer = Console.ReadLine();
+            entry = new Journal.Entry
+            {
+                _question = prompt,
+                _answer = answer
+            };
+            entries.Add(entry);
+        }
+        else if (choice == "2")
+        {
+            if (entries.Count == 0)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("\nThere are no entries to view.\n");
+                Console.ResetColor();
+                return choice;
+            }
+            else
+            {
+                Console.WriteLine("\nThis is the content:");
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                viewEntries();
+                Console.ResetColor();
+            }
+        }
+        else if (choice == "3")
+        {
+            saveEntriesToFile();
+            
+        }
+        else if (choice == "4")
+        {
+            loadEntriesFromFile();
+            
+        }
+        else if (choice == "5")
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("\nExiting the Journal App. Goodbye!");
+            Console.ResetColor();
+        }
+        else
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"\n>>>>>>>>  Incorrect election  <<<<<<<<<<\n");
+            Console.ResetColor();
+        }
+        return choice;
+    }
+
+    static void viewEntries()
+    {
+        for (int i = 0; i < entries.Count; i++)
+        {
+            Console.WriteLine($"\n{entries[i]._dateTime} -> {entries[i]._question}: {entries[i]._answer}");
+        }
+    }
+
+    static void saveEntriesToFile()
+    {
+        if (entries.Count == 0)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("\nThere are no entries to save.\n");
+            Console.ResetColor();
+            return;
+        }
+        else
+        {
+            Console.Write("What name do you want to save the file as? ");
+            string fileName = Console.ReadLine();
+            if (string.IsNullOrWhiteSpace(fileName))
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine("Name is not valid");
+                Console.ResetColor();
+                return;
+            }
+
+            try
+            {
+                var lines = entries.Select(entry => $"{entry._dateTime}|{entry._question}|{entry._answer}").ToList();
+                File.WriteAllLines(fileName, lines);
+                Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.WriteLine($"\nText save in '{fileName}' successfully.\n");
+                Console.ResetColor();
+            }
+            catch (Exception ex)
+            {
+                Console.ForegroundColor = ConsoleColor.Red;
+                Console.WriteLine($"\nError to save file: {ex.Message}\n");
+                Console.ResetColor();
+            }
+        }            
+    }
+
+    static void loadEntriesFromFile()
+    {
+        string fileRead = "";
+        var files = new List<string>();
+
+        foreach (string file in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.txt"))
+        {
+            files.Add(file);
+        }
+
+        if (files.Count == 0)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("\nThere are no files to load.\n");
+            Console.ResetColor();
+            return;
+        }
+        else if (files.Count == 1)
+        {
+            Console.Write("\nThe following file exist: ");
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.Write("'");
+            Console.Write(string.Join("', '", files.Select(f => Path.GetFileName(f))));
+            Console.Write("'");
+            Console.ResetColor();
+            Console.WriteLine("\n\nThis is the content: \n");
+            fileRead = files[0];
+        }
+        else if (files.Count > 1) 
+        {
+            Console.Write("\nThe following files exist: ");
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.Write("'");
+            Console.Write(string.Join("', '", files.Select(f => Path.GetFileName(f))));
+            Console.Write("'");
+            Console.ResetColor();
+            Console.WriteLine(". Which file do you want to read the journal from?");
+            fileRead = Console.ReadLine();
+        }
+                
+        try
+        {
+            var lines = File.ReadAllLines(fileRead);
+            foreach (var line in lines)
+            {
+                var parts = line.Split('|');
+                if (parts.Length == 3)
+                {
+                    var entry = new Journal.Entry
+                    {
+                        _dateTime = DateTime.Parse(parts[0]),
+                        _question = parts[1],
+                        _answer = parts[2]
+                    };
+                    entries.Add(entry);
+                }
+            }
+            
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            viewEntries();
+            Console.ResetColor();
+        }
+        catch (Exception ex)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"\nError loading file: {ex.Message}\n");
+            Console.ResetColor();
+        }
     }
 }
