@@ -2,6 +2,7 @@
 {
     internal class PromptGenerator
     {
+        // Variables
         Random random = new Random();
         private List<string> prompts = new List<string>
             {
@@ -26,6 +27,8 @@
                 "What would you like to achieve in your life?",
                 "What would you do if you had a perfect day?",
             };
+
+        // Constructor
         public string GetRandomPrompt()
         {
             int index = random.Next(prompts.Count);

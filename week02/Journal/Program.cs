@@ -2,6 +2,7 @@ using System;
 
 class Program
 {
+    // Variables
     private static Journal.PromptGenerator promptGenerator = new Journal.PromptGenerator();
     private static Journal.Entry entry = new Journal.Entry();
     private static string choseElection = "";
@@ -17,9 +18,9 @@ class Program
 
     static string menu()
     {
-        Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.ForegroundColor = ConsoleColor.Yellow;      // assign color to the text
         Console.WriteLine($"\n---------Welcome to the Journal App!------------");
-        Console.ResetColor();
+        Console.ResetColor();                               // reset color to default
         Console.WriteLine("1. Create a new entry");
         Console.WriteLine("2. View entries");
         Console.WriteLine("3. Save entries to file");
@@ -28,7 +29,7 @@ class Program
         Console.Write("\nPlease select an option: ");
         string choice = Console.ReadLine();
 
-        if (choice == "1")
+        if (choice == "1")                                  // Action in election 1
         {
             string prompt = promptGenerator.GetRandomPrompt();
             Console.WriteLine($"\n{prompt}");
@@ -40,7 +41,7 @@ class Program
             };
             entries.Add(entry);
         }
-        else if (choice == "2")
+        else if (choice == "2")                             // Action in election 2
         {
             if (entries.Count == 0)
             {
@@ -57,23 +58,24 @@ class Program
                 Console.ResetColor();
             }
         }
-        else if (choice == "3")
+        else if (choice == "3")                             // Action in election 3
         {
             saveEntriesToFile();
             
         }
-        else if (choice == "4")
+        else if (choice == "4")                             // Action in election 4
         {
+            entries.Clear(); 
             loadEntriesFromFile();
             
         }
-        else if (choice == "5")
+        else if (choice == "5")                             // Action in election 5
         {
             Console.ForegroundColor = ConsoleColor.Green;
             Console.WriteLine("\nExiting the Journal App. Goodbye!");
             Console.ResetColor();
         }
-        else
+        else                                                // If the user enters an invalid option
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"\n>>>>>>>>  Incorrect election  <<<<<<<<<<\n");
@@ -82,7 +84,7 @@ class Program
         return choice;
     }
 
-    static void viewEntries()
+    static void viewEntries()                               // Method to view all entries
     {
         for (int i = 0; i < entries.Count; i++)
         {
@@ -90,9 +92,9 @@ class Program
         }
     }
 
-    static void saveEntriesToFile()
+    static void saveEntriesToFile()                         // Method to save entries to a file
     {
-        if (entries.Count == 0)
+        if (entries.Count == 0)                             // Check if there are no entries to save
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("\nThere are no entries to save.\n");
@@ -101,7 +103,7 @@ class Program
         }
         else
         {
-            Console.Write("What name do you want to save the file as? ");
+            Console.Write("What name do you want to save the file as? (Even extension .txt)");
             string fileName = Console.ReadLine();
             if (string.IsNullOrWhiteSpace(fileName))
             {
@@ -128,24 +130,24 @@ class Program
         }            
     }
 
-    static void loadEntriesFromFile()
+    static void loadEntriesFromFile()                       // Method to load entries from a file
     {
         string fileRead = "";
         var files = new List<string>();
 
-        foreach (string file in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.txt"))
+        foreach (string file in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.txt")) // Get all .txt files in the current directory
         {
             files.Add(file);
         }
 
-        if (files.Count == 0)
+        if (files.Count == 0)                               // Check if there are no files to load
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine("\nThere are no files to load.\n");
             Console.ResetColor();
             return;
         }
-        else if (files.Count == 1)
+        else if (files.Count == 1)                          // If there is only one file, read it directly
         {
             Console.Write("\nThe following file exist: ");
             Console.ForegroundColor = ConsoleColor.Blue;
@@ -156,7 +158,7 @@ class Program
             Console.WriteLine("\n\nThis is the content: \n");
             fileRead = files[0];
         }
-        else if (files.Count > 1) 
+        else if (files.Count > 1)                           // If there are multiple files, ask the user which one to read
         {
             Console.Write("\nThe following files exist: ");
             Console.ForegroundColor = ConsoleColor.Blue;
@@ -167,8 +169,8 @@ class Program
             Console.WriteLine(". Which file do you want to read the journal from?");
             fileRead = Console.ReadLine();
         }
-                
-        try
+
+        try                                                 // Try to read the selected file
         {
             var lines = File.ReadAllLines(fileRead);
             foreach (var line in lines)
@@ -190,7 +192,7 @@ class Program
             viewEntries();
             Console.ResetColor();
         }
-        catch (Exception ex)
+        catch (Exception ex)                                // Catch any exceptions that occur while reading the file
         {
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"\nError loading file: {ex.Message}\n");
