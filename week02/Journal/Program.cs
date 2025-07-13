@@ -103,8 +103,12 @@ class Program
         }
         else
         {
-            Console.Write("What name do you want to save the file as? (Even extension .txt)");
+            Console.Write("What name do you want to save the file as?. ");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("Please enter a name without the extension (it will be added automatically).");
+            Console.ResetColor();
             string fileName = Console.ReadLine();
+            fileName = Path.ChangeExtension(fileName, ".csv");
             if (string.IsNullOrWhiteSpace(fileName))
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -115,7 +119,7 @@ class Program
 
             try
             {
-                var lines = entries.Select(entry => $"{entry._dateTime}|{entry._question}|{entry._answer}").ToList();
+                var lines = entries.Select(entry => $"{entry._dateTime};{entry._question};{entry._answer}").ToList();
                 File.WriteAllLines(fileName, lines);
                 Console.ForegroundColor = ConsoleColor.Magenta;
                 Console.WriteLine($"\nText save in '{fileName}' successfully.\n");
@@ -135,7 +139,7 @@ class Program
         string fileRead = "";
         var files = new List<string>();
 
-        foreach (string file in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.txt")) // Get all .txt files in the current directory
+        foreach (string file in Directory.GetFiles(Directory.GetCurrentDirectory(), "*.csv")) // Get all .txt files in the current directory
         {
             files.Add(file);
         }
@@ -156,7 +160,7 @@ class Program
             Console.Write("'");
             Console.ResetColor();
             Console.WriteLine("\n\nThis is the content: \n");
-            fileRead = files[0];
+            fileRead = Path.ChangeExtension(files[0],".csv");
         }
         else if (files.Count > 1)                           // If there are multiple files, ask the user which one to read
         {
@@ -166,8 +170,11 @@ class Program
             Console.Write(string.Join("', '", files.Select(f => Path.GetFileName(f))));
             Console.Write("'");
             Console.ResetColor();
-            Console.WriteLine(". Which file do you want to read the journal from?");
-            fileRead = Console.ReadLine();
+            Console.WriteLine(". Which file do you want to read the journal from? ");
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.WriteLine("Please enter a name without the extension (it will be added automatically).");
+            Console.ResetColor();
+            fileRead = Path.ChangeExtension(Console.ReadLine(),".csv");
         }
 
         try                                                 // Try to read the selected file
@@ -175,7 +182,7 @@ class Program
             var lines = File.ReadAllLines(fileRead);
             foreach (var line in lines)
             {
-                var parts = line.Split('|');
+                var parts = line.Split(';');
                 if (parts.Length == 3)
                 {
                     var entry = new Journal.Entry
