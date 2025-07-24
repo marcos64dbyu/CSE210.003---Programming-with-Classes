@@ -1,61 +1,92 @@
-using System.Formats.Asn1;
-
 namespace ScriptureMemorizer;
 
 public class Scripture
 {
-    private string _text;
-    private string _reference;
-    private List<int> _hiddenIndexes = new List<int>();
+    private Reference _reference;
+    private List<Word> _words;
     private Random _rand = new Random();
 
-    public Scripture(string reference, string text)
+public Scripture(Reference reference, string text)
+{
+    _reference = reference;
+
+    // Split the text into words by spaces
+    string[] splitWords = text.Split(' ');
+
+    // Create an empty list of Word objects
+    _words = new List<Word>();
+
+    // Iterate through each word and create Word objects
+    foreach (string word in splitWords)
     {
-        _reference = reference;
-        _text = text;
+        Word newWord = new Word(word);
+        _words.Add(newWord);
     }
-
-    public string PartialScripture()
-    {
-        // Split the full scripture text into individual words
-        var words = _text.Split(' ');
-
-        // If all words have already been hidden, return "exit" to indicate completion
-        if (_hiddenIndexes.Count == words.Length)
-        {
-            return "exit";
-        }
-        // Otherwise, randomly select one word that hasn't been hidden yet
-        else if (_hiddenIndexes.Count < words.Length)
-        {
-            int index;
-            do
-            {
-                index = _rand.Next(words.Length); // Get a random index within the range of words
-            }
-            while (_hiddenIndexes.Contains(index)); // Repeat until an index that hasn't been hidden is found
-
-            _hiddenIndexes.Add(index); // Mark this word index as hidden
-        }
-
-        // Replace each hidden word with underscores matching the word's length
-        for (int i = 0; i < words.Length; i++)
-        {
-            if (_hiddenIndexes.Contains(i))
-            {
-                string hiddenWord = "";
-                for (int j = 0; j < words[i].Length; j++)
-                {
-                    hiddenWord += "_";
-                }
-                words[i] = hiddenWord;
-
-            }
-        }
-
-        // Return the scripture reference followed by the partially hidden text
-        return $"{_reference}: {string.Join(" ", words)}";
-    }
-
 }
 
+
+    public void HideRandomWords(int numberToHide)
+    {
+        var visibleWords = new List<Word>();
+        foreach (var word in _words)
+        {
+            if (!word.IsHidden())
+            {
+                visibleWords.Add(word);
+            }
+        }
+
+        int countToHide = Math.Min(numberToHide, visibleWords.Count);
+
+        for (int i = visibleWords.Count - 1; i > 0; i--)
+        {
+            int j = _rand.Next(i + 1);
+            (visibleWords[i], visibleWords[j]) = (visibleWords[j], visibleWords[i]);
+        }
+
+        // Hide first words 
+        for (int i = 0; i < countToHide; i++)
+        {
+            visibleWords[i].Hide();
+        }
+
+    }
+
+    public string GetDisplayText()
+    {
+        List<string> displayWords = new List<string>();
+
+        foreach (var word in _words)
+        {
+            displayWords.Add(word.GetDisplayText());
+        }
+
+        string result = string.Join(" ", displayWords);
+        return $"{_reference.GetDisplayText()}: {result}";
+
+    }
+
+    public string OriginalText()
+    {
+        string wstr = "";
+        foreach (var word in _words)
+        {
+            word.Show();
+            wstr += word.GetDisplayText() + " ";
+        }
+        return _reference.GetDisplayText() + " - " + wstr;
+    }
+
+    public bool IsCompletelyHidden()
+    {
+        foreach (var word in _words)
+        {
+            if (!word.IsHidden())
+            {
+                return false;
+            }
+        }
+        return true;
+
+    }
+}

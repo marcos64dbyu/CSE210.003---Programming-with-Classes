@@ -2,15 +2,15 @@ using System;
 using System.Net.Quic;
 using ScriptureMemorizer;
 
-class Program
+class Programa
 {
     static void Main(string[] args)
     {
         string input;
         string inputLower;
-        string reference;
+        Reference reference;
         string text;
-        string scriptureText;
+        //string scriptureText;
         
         Console.Clear();
         Console.WriteLine("Welcome to the Scripture Memorizer!");
@@ -24,7 +24,7 @@ class Program
         }
         else
         {
-            reference = input;
+            reference = new Reference(input);
         }
         Console.WriteLine("\nEnter a scripture Text:");
         input = Console.ReadLine();
@@ -43,14 +43,16 @@ class Program
         {
             Console.Clear();
             Console.WriteLine("Can you recall the missing words?\n");
-            scriptureText = scripture.PartialScripture();
-            if (scriptureText == "exit")
+            scripture.HideRandomWords(3);
+            Console.WriteLine(scripture.GetDisplayText());
+            if (scripture.IsCompletelyHidden())
             {
                 Console.Clear();
-                Console.WriteLine("Congratulations! You have completed the scripture memorization!");
+                Console.WriteLine("This is the complete scripture:\n");
+                Console.WriteLine($"{scripture.OriginalText()}");
+                Console.WriteLine("\nCongratulations! You have completed the scripture memorization!");
                 return;
-            }
-            Console.WriteLine(scriptureText);
+            }  
             Console.WriteLine("\nPress ENTER to continue or type 'q' or 'quit' to exit:");
             input = Console.ReadLine();
             inputLower = input.ToLower();
