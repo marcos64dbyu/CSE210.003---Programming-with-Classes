@@ -62,7 +62,7 @@ public Scripture(Reference reference, string text)
         }
 
         string result = string.Join(" ", displayWords);
-        return $"{_reference.GetDisplayText()}: {result}";
+        return $"{_reference.GetDisplayText()} - {result}";
 
     }
 
