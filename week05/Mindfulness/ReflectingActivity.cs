@@ -4,6 +4,17 @@ public class ReflectingActivity : Activity
 {
     private List<string> _prompts = new List<string>
     {
+        "Think of a time when you stood up for someone else.",
+        "Think of a time when you did something really difficult.",
+        "Think of a time when you helped someone in need.",
+        "Think of a time when you did something truly selfless."
+    };
+
+    private List<string> _questions = new List<string>
+    {
+        "Why was this experience meaningful to you?",
+        "Have you ever done anything like this before?",
+        "How did you get started?",
         "What is something you are truly grateful for today?",
         "When was the last time you felt completely at peace?",
         "Who has had the greatest positive impact on your life, and why?",
@@ -26,41 +37,48 @@ public class ReflectingActivity : Activity
         "When was the last time you helped someone without expecting anything in return?"
     };
 
-
     public ReflectingActivity()
     {
-        _activityWelcome = "Consider the following prompt: ";
-        //Random random = new Random();
-        //int randomIndex = random.Next(_prompts.Count);
-        //_activityMessage = $"--- {_prompts[randomIndex]} ---";
-        _activityMessage = $"--- Think of a time when you did something really difficult. ---";
-        _questionActivity = "\nWhen you have something in mind, press enter to continue.";
+        _name = "Reflecting Activity";
+        _description = "This activity will help you reflect on times in your life when you have shown strength and resilience. This will help you recognize the power you have and how you can use it in other aspects of your life.";
     }
 
-    public void StartReflection()
+    public void Run()
     {
-        // Total duration of the activity / cycle duration
-        _duration = StartActivity();
+        DisplayStartingMessage();
+        DisplayPrompt();
 
-        Console.WriteLine("Now ponder on each of the following questions as they related to this experience.");
-
-        Actions("You may begin in: ",6);
-
+        Console.WriteLine("\nNow ponder on each of the following questions as they related to this experience.");
+        Console.Write("You may begin in: ");
+        ShowCountDown(5);
         Console.Clear();
 
+        DateTime startTime = DateTime.Now;
+        DateTime endTime = startTime.AddSeconds(_duration);
+
+        while (DateTime.Now < endTime)
+        {
+            DisplayQuestions();
+        }
+
+        DisplayEndingMessage();
+    }
+
+    private void DisplayPrompt()
+    {
         Random random = new Random();
         int randomIndex = random.Next(_prompts.Count);
-        Console.Write($"> {_prompts[randomIndex]}  ");
-        Loading(timeC:15);
-        randomIndex = random.Next(_prompts.Count);
-        Console.Write($"> {_prompts[randomIndex]}  ");
-        Loading(timeC: 15);
+        Console.WriteLine($"--- {_prompts[randomIndex]} ---");
+        Console.Write("When you have something in mind, press enter to continue.");
+        Console.ReadLine();
+    }
 
-        Console.WriteLine("\nWell done!!");
-        Loading(timeC: 5);
-        Console.WriteLine("You have completed another 30 seconds of the Reflecting Activity");
-        Loading(timeC: 5);
-
-        return;
+    private void DisplayQuestions()
+    {
+        Random random = new Random();
+        int randomIndex = random.Next(_questions.Count);
+        Console.Write($"> {_questions[randomIndex]} ");
+        ShowSpinner(10);
+        Console.WriteLine();
     }
 }

@@ -1,4 +1,4 @@
-
+﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.5.002.0
@@ -52,6 +52,10 @@ EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "YouTubeVideos", "week04\YouTubeVideos\YouTubeVideos.csproj", "{A6709D86-1F90-495D-8153-747314A4A638}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OnlineOrdering", "week04\OnlineOrdering\OnlineOrdering.csproj", "{E1B72617-DE50-4DD7-900B-8C51A2CE59DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Practica", "Practica\Practica.csproj", "{32782F53-34FF-481F-93BA-F7467E90AC7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mindfulnes_befores", "week05\Mindfulness_before\Mindfulnes_befores.csproj", "{8471780C-09C0-673F-5076-52414B68D22C}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -127,6 +131,14 @@ Global
 		{E1B72617-DE50-4DD7-900B-8C51A2CE59DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E1B72617-DE50-4DD7-900B-8C51A2CE59DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E1B72617-DE50-4DD7-900B-8C51A2CE59DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{32782F53-34FF-481F-93BA-F7467E90AC7A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{32782F53-34FF-481F-93BA-F7467E90AC7A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{32782F53-34FF-481F-93BA-F7467E90AC7A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{32782F53-34FF-481F-93BA-F7467E90AC7A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8471780C-09C0-673F-5076-52414B68D22C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8471780C-09C0-673F-5076-52414B68D22C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8471780C-09C0-673F-5076-52414B68D22C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8471780C-09C0-673F-5076-52414B68D22C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -149,6 +161,8 @@ Global
 		{6D76A1CF-EC33-4A11-A4D1-875E3BC9B0F4} = {F02862B3-F181-4F4C-9998-E7B60A408DE0}
 		{A6709D86-1F90-495D-8153-747314A4A638} = {DF91008F-F53E-47FA-8705-F7975A484AC4}
 		{E1B72617-DE50-4DD7-900B-8C51A2CE59DC} = {DF91008F-F53E-47FA-8705-F7975A484AC4}
+		{32782F53-34FF-481F-93BA-F7467E90AC7A} = {1625D5AC-DA72-440B-BEAD-10EA1BC43FF6}
+		{8471780C-09C0-673F-5076-52414B68D22C} = {1625D5AC-DA72-440B-BEAD-10EA1BC43FF6}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {F0FE697C-A888-4331-AE3F-A57311A5E554}

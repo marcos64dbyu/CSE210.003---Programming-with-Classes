@@ -2,29 +2,29 @@ namespace Mindfulness;
 
 public class BreathingActivity : Activity
 {
-    private int _duration;
-
     public BreathingActivity()
     {
-        _activityWelcome = "Welcome to the Breathing Activity.";
-        _activityMessage = "This activity will help you relax by walking you through breathing in and out slowly. Clear your mind and focus on your breating";
+        _name = "Breathing Activity";
+        _description = "This activity will help you relax by walking you through breathing in and out slowly. Clear your mind and focus on your breathing.";
     }
 
-    public void StartBreathing()
+    public void Run()
     {
-        // Total duration of the activity / cycle duration
-        _duration = StartActivity() / 10;
-        for (int i = 0; i < _duration; i++)
+        DisplayStartingMessage();
+
+        DateTime startTime = DateTime.Now;
+        DateTime endTime = startTime.AddSeconds(_duration);
+
+        while (DateTime.Now < endTime)
         {
-            Actions("Breathe in...", 4);
-            Actions("Now breathe out...", 6);
+            Console.Write("Breathe in...");
+            ShowCountDown(4);
+            Console.WriteLine();
+            Console.Write("Breathe out...");
+            ShowCountDown(6);
             Console.WriteLine("\n");
         }
-        
-        Console.WriteLine("Well done!!");
-        Loading(timeC:10);
 
-        return;
+        DisplayEndingMessage();
     }
-
 }
