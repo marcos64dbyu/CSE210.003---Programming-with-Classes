@@ -316,8 +316,9 @@ namespace EternalQuest
                     _goals.Add(goal);
                 }
 
-                Console.WriteLine($"\n   Goals loaded from '{filename}'.");
             }
+
+            Console.WriteLine($"\n   Goals loaded from '{filename}'.");
 
             ReturnMenu();
         }
