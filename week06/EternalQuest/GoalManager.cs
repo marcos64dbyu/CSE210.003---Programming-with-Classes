@@ -18,10 +18,10 @@ namespace EternalQuest
         {
             string userInput;
 
+            SplashScreen();
+            Thread.Sleep(3000);
             do
             {
-                SplashScreen();
-                Thread.Sleep(3000);
                 Console.Clear();
                 DisplayPlayerInfo();
                 Console.WriteLine();
