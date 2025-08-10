@@ -20,10 +20,12 @@ namespace EternalQuest
 
             do
             {
+                SplashScreen();
+                Thread.Sleep(3000);
                 Console.Clear();
                 DisplayPlayerInfo();
                 Console.WriteLine();
-                Console.WriteLine("Welcome to the Eternal Quest!");
+                Console.WriteLine("Menu Options:");
                 Console.WriteLine("  1. Create a New Goal");
                 Console.WriteLine("  2. List Goals");
                 Console.WriteLine("  3. Save Goals");
@@ -37,31 +39,31 @@ namespace EternalQuest
                 {
                     case "1":
                         Console.Clear();
-                        Console.WriteLine("Menu --> Create a New Goal");
+                        Console.WriteLine(">>>> Create a New Goal <<<<\n");
                         CreateGoal();
                         break;
                     case "2":
                         Console.Clear();
-                        Console.WriteLine("Menu --> List Goals");
+                        Console.WriteLine(">>>> List Goals <<<<\n");
                         ListGoalDetails();
                         break;
                     case "3":
                         Console.Clear();
-                        Console.WriteLine("Menu --> Save Goals");
+                        Console.WriteLine(">>>> Save Goals <<<<\n");
                         SaveGoals();
                         break;
                     case "4":
                         Console.Clear();
-                        Console.WriteLine("Menu --> Load Goals");
+                        Console.WriteLine(">>>> Load Goals <<<<\n");
                         LoadGoals();
                         break;
                     case "5":
                         Console.Clear();
-                        Console.WriteLine("Menu --> Record Event");
+                        Console.WriteLine(">>>> Record Event <<<<\n");
                         RecordEvent();
                         break;
                     case "6":
-                        Console.WriteLine("Menu --> Exit");
+                        Console.WriteLine("\nGood Bye");
                         break;
                     default:
                         Console.WriteLine("Invalid option, please try again.");
@@ -95,9 +97,6 @@ namespace EternalQuest
 
         public void ListGoalDetails()
         {
-            bool complete = false;
-            string completeString = complete ? "X" : " ";
-
             if (_goals.Count == 0)
             {
                 Console.WriteLine("\n   No goals available.");
@@ -107,7 +106,8 @@ namespace EternalQuest
                 Console.WriteLine("\nThe goals are:\n");
                 for (int i = 0; i < _goals.Count; i++)
                 {
-                    complete = _goals[i].IsComplete();
+                    bool complete = _goals[i].IsComplete();
+                    string completeString = complete ? "X" : " ";
                     Console.WriteLine($"   {i + 1}. [{completeString}] {_goals[i].GetDetailsString()}");
                 }
             }
@@ -149,31 +149,64 @@ namespace EternalQuest
 
         public void RecordEvent()
         {
+            int actualScore = 0;
+
             if (_goals.Count == 0)
             {
                 Console.WriteLine("No goals available to record an event.");
                 return;
             }
             ListGoalNames();
-            Console.Write("Select the goal number to record an event: ");
+            Console.Write("\nSelect the goal number to record an event: ");
             if (int.TryParse(Console.ReadLine(), out int goalIndex) && goalIndex > 0 && goalIndex <= _goals.Count)
             {
-                Goal selectedGoal = _goals[goalIndex - 1];
-                selectedGoal.RecordEvent();
-                if (selectedGoal.IsComplete())
+                if(_goals[goalIndex - 1].IsComplete())              // Check if the goal is already complete
                 {
-                    _score += int.Parse(selectedGoal._points);
-                    Console.WriteLine($"Congratulations! You completed the goal '{selectedGoal._shortName}' and earned {selectedGoal._points} points.");
+                    Console.WriteLine("\n   (X) This goal is already complete.");
+                    ReturnMenu();
+                    return;
                 }
-                else
+
+                // If the goal is not complete, record the event
+
+                actualScore = int.Parse(_goals[goalIndex - 1]._points);
+                
+                var goal = _goals[goalIndex - 1];
+                var amountCompleteProperty = goal.GetType().GetProperty("_amountCompleted");
+                var targetProperty = goal.GetType().GetProperty("_target");
+                var bonusProperty = goal.GetType().GetProperty("_bonus");
+                var isCompleteProperty = goal.GetType().GetProperty("_isComplete");
+                if (amountCompleteProperty != null)   // Check if the goal has a property named "_amountComplete"
                 {
-                    Console.WriteLine($"You recorded an event for the goal '{selectedGoal._shortName}'.");
+                    // Increment the _amountComplete property if it exists
+                    int currentAmount = (int)amountCompleteProperty.GetValue(goal);
+                    currentAmount++;
+                    amountCompleteProperty.SetValue(goal, currentAmount);
+
+                    // If currentAmount ≥ targetValue, give the bonus.
+                    int targetValue = (int)targetProperty.GetValue(goal);
+                    if (currentAmount >= targetValue)
+                    {
+                        actualScore += (int)bonusProperty.GetValue(goal);
+                    }
                 }
+                else if (goal.GetType().Name == "SimpleGoal") 
+                {
+                    isCompleteProperty.SetValue(goal, true);
+                }
+                _score += actualScore;
+
             }
             else
             {
-                Console.WriteLine("Invalid goal number.");
+                Console.WriteLine("\n(X) Invalid goal number.");
+                ReturnMenu();
+                return;
             }
+
+            Console.WriteLine($"\nCongratulations! You have earned {actualScore} points!");
+            Console.WriteLine($"You now have {_score} points.");
+            ReturnMenu();
         }
 
         public void SaveGoals()
@@ -186,7 +219,7 @@ namespace EternalQuest
             }
             else
             {
-                Console.Write("What is the filename for the goal file? ");
+                Console.Write("\nWhat is the filename for the goal file?: ");
 
                 string filename = Console.ReadLine();
 
@@ -199,9 +232,9 @@ namespace EternalQuest
 
                     foreach (Goal goal in _goals)
                     {
-                        if (goal.GetType().GetProperties().Length < 4) 
+                        if (goal.GetType().Name == "SimpleGoal") 
                         {
-                            outputFile.WriteLine($"{goal.GetStringRepresentation()},{goal.IsComplete()}");
+                            outputFile.WriteLine($"{goal.GetStringRepresentation()},{goal.IsComplete().ToString()}");
                         }
                         else
                         {
@@ -209,29 +242,28 @@ namespace EternalQuest
                         }
                     }
                 }
-                Console.WriteLine($"\n   Goals saved to {filename}.");
-                Console.Write($"\nPlease press <Enter> to continue.");
-                Console.ReadLine();
+                Console.WriteLine($"\n   Goals saved to '{filename}'.");
+                ReturnMenu();
             }
         }
 
         public void LoadGoals()
         {
-            Console.Write("What is the filename for the goal file? ");
+            Console.Write("\nWhat is the filename for the goal file?:  ");
 
             string filename = Console.ReadLine();
 
-            if (filename.Length < 4)
+            if (filename.Length < 4)        // Check for valid filename
             {
-                Console.WriteLine("Invalid filename.");
-                Console.Write($"\n   Please press <Enter> to continue.");
+                Console.WriteLine("\n     (X) Invalid filename.");
+                Console.Write($"\nPlease press <Enter> to continue.");
                 Console.ReadLine();
                 return;
             }
 
             string pathSave = Path.Combine(Directory.GetCurrentDirectory(), filename);
             
-            if (!File.Exists(pathSave))
+            if (!File.Exists(pathSave))     // Check if the file exists
             {
                 Console.WriteLine($"File {filename} does not exist.");
                 Console.Write($"\n   Please press <Enter> to continue.");
@@ -240,6 +272,14 @@ namespace EternalQuest
             }
 
             string[] lines = System.IO.File.ReadAllLines(pathSave);
+
+            if (lines.Length == 0)      // Check if the file is empty
+            {
+                Console.WriteLine("\n   (X) No goals available to load.");
+                Console.Write($"\nPlease press <Enter> to continue.");
+                Console.ReadLine();
+                return;
+            }
 
             _score = int.Parse(lines[0]);
 
@@ -252,9 +292,10 @@ namespace EternalQuest
                 if (goalType == "SimpleGoal")
                 {
                     Goal goal = new SimpleGoal(goalDetails[0], goalDetails[1], goalDetails[2]);
+                    var isCompleteProperty = goal.GetType().GetProperty("_isComplete");
                     if (goalDetails.Length > 3 && bool.Parse(goalDetails[3]))
                     {
-                        goal.IsComplete();
+                        isCompleteProperty.SetValue(goal, true);
                     }
                     _goals.Add(goal);
                 }
@@ -265,8 +306,8 @@ namespace EternalQuest
                 }
                 else if (goalType == "ChecklistGoal")
                 {
-                    int target = int.Parse(goalDetails[3]);
-                    int bonus = int.Parse(goalDetails[4]);
+                    int target = int.Parse(goalDetails[4]);
+                    int bonus = int.Parse(goalDetails[3]);
                     int amountCompleted = int.Parse(goalDetails[5]);
                     ChecklistGoal goal = new ChecklistGoal(goalDetails[0], goalDetails[1], goalDetails[2], target, bonus)
                     {
@@ -275,6 +316,69 @@ namespace EternalQuest
                     _goals.Add(goal);
                 }
             }
+
+            ReturnMenu();
+        }
+
+        public void ReturnMenu()
+        {
+            int i = 5;
+
+            Console.Write("\nReturn to menu in:   ");
+            for (i = 5; i >= 1; i--)
+            {
+                
+                Console.Write($"\b \b{i}");
+                Thread.Sleep(1000);
+            }
+        }
+
+        public void SplashScreen()
+        {
+
+            string[] logo = new string[2];
+            logo[0] = @"
+ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ 
+ |______|______|______|______|______|______|______|______|______|______|______|______|______|
+                                         Welcome to the                                         
+ ______        ______ _                        _    ____                  _   _     ______   
+ \ \ \ \      |  ____| |                      | |  / __ \                | | | |   / / / /   
+  \ \ \ \     | |__  | |_ ___ _ __ _ __   __ _| | | |  | |_   _  ___  ___| |_| |  / / / /    
+   > > > >    |  __| | __/ _ \ '__| '_ \ / _` | | | |  | | | | |/ _ \/ __| __| | < < < <     
+  / / / /     | |____| ||  __/ |  | | | | (_| | | | |__| | |_| |  __/\__ \ |_|_|  \ \ \ \    
+ /_/_/_/      |______|\__\___|_|  |_| |_|\__,_|_|  \___\_\\__,_|\___||___/\__(_)   \_\_\_\  
+                                              Game!
+  ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ ______ 
+ |______|______|______|______|______|______|______|______|______|______|______|______|______|
+
+        ";
+
+            logo[1] = @"
+                                        Welcome to the
+ __________________________________________________________________________________________              
+/_____/_____/_____/_____/_____/_____/_____/_____/_____/_____/_____/_____/_____/_____/_____/              
+______             ________                        __   ____                  __  __   ______
+\ \ \ \           / ____/ /____  _________  ____ _/ /  / __ \__  _____  _____/ /_/ /  / / / /
+ \ \ \ \         / __/ / __/ _ \/ ___/ __ \/ __ `/ /  / / / / / / / _ \/ ___/ __/ /  / / / / 
+ / / / /        / /___/ /_/  __/ /  / / / / /_/ / /  / /_/ / /_/ /  __(__  ) /_/_/   \ \ \ \ 
+/_/_/_/        /_____/\__/\___/_/  /_/ /_/\__,_/_/   \___\_\__,_/\___/____/\__(_)     \_\_\_\
+ __________________________________________________________________________________________              
+/_____/_____/_____/_____/_____/_____/_____/_____/_____/_____/_____/_____/_____/_____/_____/  
+                                            Game!
+        ";
+            
+
+            Random rand = new Random();
+            int logoIndex = rand.Next(0, 2);
+
+            List<string> logoLines = logo[logoIndex].Split(new[] { Environment.NewLine }, StringSplitOptions.None).ToList();
+
+            foreach (string line in logoLines)
+            {
+                Console.WriteLine(line);
+                Thread.Sleep(80); 
+            }
+
         }
 
     }

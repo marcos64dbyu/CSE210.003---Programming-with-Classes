@@ -17,7 +17,7 @@
             base.RecordEvent();                                                         // Call the base method to record the event
             Console.Write($"How many times do you need to complete this goal? ");       // add prompt for target
             _target = int.Parse(Console.ReadLine());
-            Console.Write($"What is the bonus points for completing this goal? ");      // add prompt for bonus points
+            Console.Write($"What is the bonus for accomplishing it that may times? ");      // add prompt for bonus points
             _bonus = int.Parse(Console.ReadLine());
         }
 
